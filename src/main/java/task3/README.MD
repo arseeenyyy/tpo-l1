@@ -8,7 +8,7 @@
     характеристики: power
     состояния: isAlive
 2) Дверь 
-    состояния: condition
+    состояния: condition, isClosed
 3) Монстры 
     характеристики: power
     состояния: isAlive, isScreaming
