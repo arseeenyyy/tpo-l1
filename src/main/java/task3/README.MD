@@ -13,6 +13,7 @@
     характеристики: power
     состояния: isAlive, isScreaming
 
+```mermaid 
 graph TD
 Start([START]) --> AliveCheck{isAlive?}
 
@@ -50,7 +51,7 @@ Start([START]) --> AliveCheck{isAlive?}
     Lose1 --> End7([END])
     Win2 --> End8([END])
     Lose2 --> End9([END])
-
+```
 Тестовые сценарии:
 1) Мертвый персонаж — isAlive=false → состояние двери и монстров не меняется.
 2) Дверь GOOD, монстров нет → дверь закрыта (closed=true), состояние двери не меняется (GOOD).
