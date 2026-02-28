@@ -5,12 +5,17 @@
 
 Сущности и их атрибуты:
 1) Персонаж 
+
     характеристики: power
+
     состояния: isAlive
 2) Дверь 
+
     состояния: condition, isClosed
 3) Монстры 
+
     характеристики: power
+
     состояния: isAlive, isScreaming
 
 ```mermaid 

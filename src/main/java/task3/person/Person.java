@@ -23,7 +23,7 @@ public class Person {
             return;
         }
         System.out.print(name + " уперся плечом в дверь кабины, стараясь запереть ее,");
-        int monstersPower = monsters.stream().mapToInt(Monster::getPower).sum();
+        int monstersPower = monsters.stream().filter(Monster::isAlive).mapToInt(Monster::getPower).sum();
         if (door.getCondition().equals(Condition.GOOD)) {
             System.out.print(" она была хорошо подогнана и ему удалось плотно закрыть дверь.");
             door.setClosed(true);
