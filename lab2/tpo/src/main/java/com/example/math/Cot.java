@@ -3,13 +3,13 @@ package com.example.math;
 // tan(x) = cos(x) / sin(x) 
 // x != pi * k
 public class Cot implements MathFunction {
-    private final MathFunction cos;
-    private final MathFunction sin;
+    private final Cos cos;
+    private final Sin sin;
     private final double epslion;
 
-    public Cot(MathFunction cos, MathFunction sin, double epsilon) {
-        this.cos = cos;
+    public Cot(Sin sin, Cos cos, double epsilon) {
         this.sin = sin;
+        this.cos = cos;
         this.epslion = epsilon;
     }
 

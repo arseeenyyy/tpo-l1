@@ -10,7 +10,11 @@ public class Sin implements MathFunction {
         this.epsilon = epsilon;
     }
 
-    @Override 
+    public Sin() {
+        this.epsilon = 1e-10;
+    }
+
+    @Override
     public double calculate(double x) {
         double normalized = normalizeAngle(x);
 
@@ -22,7 +26,7 @@ public class Sin implements MathFunction {
             // -x^2/((2n)*(2n+1))
             term *= -normalized * normalized / ((2 * n) * (2 * n + 1));
             sum += term;
-            n ++;
+            n++;
 
             if (n > 10000) break;
         }
@@ -34,7 +38,7 @@ public class Sin implements MathFunction {
 
         if (normalized > Math.PI) {
             normalized -= (2 * Math.PI);
-        } else if (normalized < - Math.PI) {
+        } else if (normalized < -Math.PI) {
             normalized += (2 * Math.PI);
         }
         return normalized;

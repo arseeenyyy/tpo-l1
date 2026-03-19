@@ -3,10 +3,10 @@ package com.example.math;
 // csc = 1 / sin(x)
 // x != pi * k
 public class Csc implements MathFunction {
-    private final MathFunction sin;
+    private final Sin sin;
     private final double epslion;
 
-    public Csc(MathFunction sin, double epsilon) {
+    public Csc(Sin sin, double epsilon) {
         this.sin = sin;
         this.epslion = epsilon;
     }

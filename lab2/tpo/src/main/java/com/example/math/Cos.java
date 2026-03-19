@@ -2,9 +2,9 @@ package com.example.math;
 
 // cos = sin(x + pi/2)
 public class Cos implements MathFunction {
-    private final MathFunction sin;
+    private final Sin sin;
 
-    public Cos(MathFunction sin) {
+    public Cos(Sin sin) {
         this.sin = sin; 
     }
 
