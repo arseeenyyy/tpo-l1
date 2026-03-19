@@ -20,15 +20,15 @@ class TanIntegrationTest {
     private static final double EPS = 1e-6;
 
     @Mock
-    private Sin mockSin;   // мок для подмены значений
+    private Sin mockSin;
 
     @Spy
-    private Sin spySin;  // spy для проверки реальных вызовов
+    private Sin spySin;
 
     @Mock
-    private Cos mockCos;   // мок для подмены значений
+    private Cos mockCos;
 
-    private Cos cos;    // spy для проверки реальных вызовов (создаётся вручную)
+    private Cos cos;
 
     private Tan tan;
 
@@ -36,7 +36,7 @@ class TanIntegrationTest {
     void setUp() {
         cos = spy(new Cos(spySin));
         tan = spy(new Tan(spySin, cos, EPS));
-        // Настраиваем lenient stub для mock, чтобы избежать UnnecessaryStubbing
+
         lenient().when(mockSin.calculate(anyDouble()))
                 .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
         lenient().when(mockCos.calculate(anyDouble()))
@@ -52,7 +52,6 @@ class TanIntegrationTest {
             assertEquals(expected, tan.calculate(x), EPS);
         }
 
-        // Проверяем вызовы spy
         verify(spySin, atLeastOnce()).calculate(x);
         verify(cos, atLeastOnce()).calculate(x);
     }
@@ -60,7 +59,6 @@ class TanIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/tan_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingMock(double x, double expected) {
-        // Tan с mock бинами
         Tan tanWithMock = new Tan(mockSin, mockCos, 1e-10);
 
         if (Double.isNaN(expected)) {
@@ -71,7 +69,6 @@ class TanIntegrationTest {
             assertEquals(expected, tanWithMock.calculate(x), EPS);
         }
 
-        // Проверяем вызовы mock
         verify(mockSin, atLeastOnce()).calculate(x);
         verify(mockCos, atLeastOnce()).calculate(x);
     }

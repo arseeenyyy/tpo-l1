@@ -20,15 +20,15 @@ class CotIntegrationTest {
     private static final double EPS = 1e-6;
 
     @Mock
-    private Sin mockSin; // мок для подмены возвращаемых значений
+    private Sin mockSin;
 
     @Spy
-    private Sin spySin; // spy для проверки реальных вызовов
+    private Sin spySin;
 
     @Mock
-    private Cos mockCos; // мок для подмены возвращаемых значений
+    private Cos mockCos;
 
-    private Cos cos; // spy для проверки реальных вызовов
+    private Cos cos;
 
     private Cot cot;
 
@@ -36,7 +36,7 @@ class CotIntegrationTest {
     void setUp() {
         cos = spy(new Cos(spySin));
         cot = spy(new Cot(spySin, cos, EPS));
-        // lenient stub для mockSin и mockCos, чтобы избежать UnnecessaryStubbing
+
         lenient().when(mockSin.calculate(anyDouble()))
                 .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
         lenient().when(mockCos.calculate(anyDouble()))
@@ -46,14 +46,12 @@ class CotIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/cot_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingSpy(double x, Double expected) {
-
         if (expected.isNaN()) {
             assertThrows(ArithmeticException.class, () -> cot.calculate(x));
         } else {
             assertEquals(expected, cot.calculate(x), EPS);
         }
 
-        // Проверяем, что spy реально вызван
         verify(spySin, atLeastOnce()).calculate(x);
         verify(cos, atLeastOnce()).calculate(x);
     }
@@ -61,10 +59,8 @@ class CotIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/cot_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingMock(double x, Double expected) {
-
         Cot cotWithMock = new Cot(mockSin, mockCos, 1e-10);
 
-        // Проверяем результат с мокнутыми Sin и Cos
         if (expected.isNaN()) {
             when(mockCos.calculate(x)).thenReturn(0.0);
             when(mockSin.calculate(x)).thenReturn(1.0); // чтобы вызвать исключение
@@ -73,7 +69,6 @@ class CotIntegrationTest {
             assertEquals(expected, cotWithMock.calculate(x), EPS);
         }
 
-        // Проверяем, что метод calculate на mock вызвался
         verify(mockSin, atLeastOnce()).calculate(x);
         verify(mockCos, atLeastOnce()).calculate(x);
     }

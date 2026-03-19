@@ -19,17 +19,16 @@ class CosIntegrationTest {
     private static final double EPS = 1e-6;
 
     @Mock
-    private Sin mockSin;  // мок для подмены возвращаемых значений
+    private Sin mockSin;
 
     @Spy
-    private Sin spySin; // spy для проверки реальных вызовов
+    private Sin spySin;
 
     private Cos cos;
 
     @BeforeEach
     void setUp() {
         cos = spy(new Cos(spySin));
-        // lenient stub для mockSin, чтобы избежать UnnecessaryStubbing
         lenient().when(mockSin.calculate(anyDouble()))
                 .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
     }
@@ -37,23 +36,15 @@ class CosIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingSpy(double x, double expected) {
-        // проверка с использованием spy
         assertEquals(expected, cos.calculate(x), EPS);
-
-        // проверяем, что метод calculate на spySin реально вызвался
         verify(spySin, atLeastOnce()).calculate(anyDouble());
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingMock(double x, double expected) {
-        // создаём Cos с mockSin
         Cos cosWithMock = new Cos(mockSin);
-
-        // проверка с использованием mockSin
         assertEquals(Math.cos(x), cosWithMock.calculate(x), EPS);
-
-        // проверяем, что метод calculate на mockSin вызвался
         verify(mockSin, atLeastOnce()).calculate(anyDouble());
     }
 }

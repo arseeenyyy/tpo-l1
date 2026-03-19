@@ -19,17 +19,16 @@ class CscIntegrationTest {
     private static final double EPS = 1e-6;
 
     @Mock
-    private Sin mockSin;  // мок для подмены возвращаемых значений
+    private Sin mockSin;
 
     @Spy
-    private Sin spySin; // spy для проверки реальных вызовов
+    private Sin spySin;
 
     private Csc csc;
 
     @BeforeEach
     void setUp() {
         csc = spy(new Csc(spySin, EPS));
-        // Настраиваем lenient stub для mockSin, чтобы избежать UnnecessaryStubbing
         lenient().when(mockSin.calculate(anyDouble()))
                 .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
     }
@@ -37,22 +36,18 @@ class CscIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/csc_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingSpy(double x, double expected) {
-
         if (Double.isNaN(expected)) {
             assertThrows(ArithmeticException.class, () -> csc.calculate(x));
         } else {
             assertEquals(expected, csc.calculate(x), EPS);
         }
 
-        // Проверяем, что метод calculate на spy реально вызвался
-        verify(spySin, atLeastOnce()).calculate(x);
+         verify(spySin, atLeastOnce()).calculate(x);
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "/csc_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingMock(double x, double expected) {
-
-        // Создаём Csc с mockSin
         Csc cscWithMock = new Csc(mockSin, 1e-10);
 
         if (Double.isNaN(expected)) {
@@ -62,7 +57,6 @@ class CscIntegrationTest {
             assertEquals(expected, cscWithMock.calculate(x), EPS);
         }
 
-        // Проверяем, что метод calculate на mock вызвался
         verify(mockSin, atLeastOnce()).calculate(x);
     }
 }
