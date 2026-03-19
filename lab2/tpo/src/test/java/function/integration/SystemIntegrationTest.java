@@ -29,7 +29,7 @@ class SystemIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Создаем моки для тригонометрической системы
+        // моки для тригонометрической системы
         tanMock = mock(MathFunction.class);
         cscMock = mock(MathFunction.class);
         cotMock = mock(MathFunction.class);
@@ -37,7 +37,7 @@ class SystemIntegrationTest {
 
         trigSystem = new TrigonometricSystem(tanMock, cscMock, cotMock, sinMock, 1e-6);
 
-        // Создаем моки для логарифмической системы
+        // моки для логарифмической системы
         log2Mock = mock(MathFunction.class);
         log3Mock = mock(MathFunction.class);
         log10Mock = mock(MathFunction.class);
@@ -45,13 +45,13 @@ class SystemIntegrationTest {
 
         logSystem = new LogSystem(log2Mock, log3Mock, log10Mock, lnMock);
 
-        // Система, которая использует обе подсистемы
+        // система
         systemFunction = new SystemFunction(trigSystem, logSystem);
     }
 
     @Test
     void testSystemUsesTrigonometricForNegative() {
-        // Настраиваем моки
+        // моки
         when(tanMock.calculate(-1)).thenReturn(2.0);
         when(cscMock.calculate(-1)).thenReturn(1.0);
         when(cotMock.calculate(-1)).thenReturn(3.0);
@@ -61,7 +61,7 @@ class SystemIntegrationTest {
 
         assertTrue(Double.isFinite(result));
 
-        // Проверяем, что вызвались только тригонометрические моки
+        // вызвались только тригонометрические моки
         verify(tanMock).calculate(-1);
         verify(cscMock).calculate(-1);
         verify(cotMock).calculate(-1);
@@ -72,7 +72,7 @@ class SystemIntegrationTest {
 
     @Test
     void testSystemUsesLogForPositive() {
-        // Настраиваем моки
+        // моки
         when(log2Mock.calculate(2)).thenReturn(1.0);
         when(log3Mock.calculate(2)).thenReturn(0.63);
         when(log10Mock.calculate(2)).thenReturn(0.3);
@@ -82,7 +82,7 @@ class SystemIntegrationTest {
 
         assertTrue(Double.isFinite(result));
 
-        // Проверяем, что вызвались только логарифмические моки
+        // вызвались только логарифмические моки
         verify(log2Mock).calculate(2);
         verify(log3Mock).calculate(2);
         verify(log10Mock).calculate(2);
