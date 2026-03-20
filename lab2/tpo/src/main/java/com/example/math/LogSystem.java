@@ -3,16 +3,20 @@ package com.example.math;
 // (((((log10(x) * log2(x)) + log3(x)) + ln(x)) * ((log3(x) * ln(x)) * log3(x))) * log3(x))
 
 public class LogSystem implements MathFunction {
-    private final MathFunction log2;
-    private final MathFunction log3;
-    private final MathFunction log10;
-    private final MathFunction ln;
+    private MathFunction log2;
+    private MathFunction log3;
+    private MathFunction log10;
+    private MathFunction ln;
 
     public LogSystem(MathFunction log2, MathFunction log3, MathFunction log10, MathFunction ln) {
         this.log2 = log2;
         this.log3 = log3;
         this.log10 = log10;
         this.ln = ln;
+    }
+
+    public LogSystem(){
+
     }
 
     @Override

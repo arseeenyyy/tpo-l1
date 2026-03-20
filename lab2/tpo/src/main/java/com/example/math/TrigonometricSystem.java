@@ -3,11 +3,11 @@ package com.example.math;
 // (((((((tan(x) - csc(x)) * cot(x)) - csc(x)) * (tan(x)^3))^3)^3) * ((sin(x)^2) - csc(x)))
 
 public class TrigonometricSystem implements MathFunction {
-    private final MathFunction tan;
-    private final MathFunction csc;
-    private final MathFunction cot;
-    private final MathFunction sin;
-    private final double epsilon;
+    private MathFunction tan;
+    private MathFunction csc;
+    private MathFunction cot;
+    private MathFunction sin;
+    private double epsilon;
 
     public TrigonometricSystem(MathFunction tan, MathFunction csc, MathFunction cot, MathFunction sin, double epsilon) {
         this.tan = tan;
@@ -15,6 +15,10 @@ public class TrigonometricSystem implements MathFunction {
         this.cot = cot;
         this.sin = sin;
         this.epsilon = epsilon;
+    }
+
+    public TrigonometricSystem(){
+
     }
 
     @Override

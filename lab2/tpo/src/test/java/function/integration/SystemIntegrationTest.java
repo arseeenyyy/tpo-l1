@@ -1,112 +1,59 @@
 package function.integration;
 
-import com.example.math.LogSystem;
-import com.example.math.MathFunction;
-import com.example.math.SystemFunction;
-import com.example.math.TrigonometricSystem;
+import com.example.math.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class SystemIntegrationTest {
 
-    private MathFunction tanMock;
-    private MathFunction cscMock;
-    private MathFunction cotMock;
-    private MathFunction sinMock;
-
-    private MathFunction log2Mock;
-    private MathFunction log3Mock;
-    private MathFunction log10Mock;
-    private MathFunction lnMock;
-
+    @Mock
     private TrigonometricSystem trigSystem;
+
+    @Mock
     private LogSystem logSystem;
-    private SystemFunction systemFunction;
 
-    @BeforeEach
-    void setUp() {
-        // моки для тригонометрической системы
-        tanMock = mock(MathFunction.class);
-        cscMock = mock(MathFunction.class);
-        cotMock = mock(MathFunction.class);
-        sinMock = mock(MathFunction.class);
+    private static final double EPS = 1e-6;
 
-        trigSystem = new TrigonometricSystem(tanMock, cscMock, cotMock, sinMock, 1e-6);
+    @ParameterizedTest
+    @CsvFileSource(resources = "/func.csv", numLinesToSkip = 1)
+    void testSystemFunction(double x, double expected) {
 
-        // моки для логарифмической системы
-        log2Mock = mock(MathFunction.class);
-        log3Mock = mock(MathFunction.class);
-        log10Mock = mock(MathFunction.class);
-        lnMock = mock(MathFunction.class);
+        if (x <= 0) {
+            lenient().when(trigSystem.calculate(x)).thenReturn(expected);
+        } else {
+            lenient().when(logSystem.calculate(x)).thenReturn(expected);
+        }
 
-        logSystem = new LogSystem(log2Mock, log3Mock, log10Mock, lnMock);
+        SystemFunction systemFunction = new SystemFunction(trigSystem, logSystem);
+        double result = systemFunction.calculate(x);
 
-        // система
-        systemFunction = new SystemFunction(trigSystem, logSystem);
+        assertEquals(expected, result, 1e-6);
     }
 
-    @Test
-    void testSystemUsesTrigonometricForNegative() {
-        // моки
-        when(tanMock.calculate(-1)).thenReturn(2.0);
-        when(cscMock.calculate(-1)).thenReturn(1.0);
-        when(cotMock.calculate(-1)).thenReturn(3.0);
-        when(sinMock.calculate(-1)).thenReturn(0.5);
+    @ParameterizedTest
+    @CsvFileSource(resources = "/func.csv", numLinesToSkip = 1)
+    void spyTestSystemFunction(double x, double expected) {
+        Sin sin = new Sin();
+        Cos cos = new Cos(sin);
+        Csc csc = new Csc(sin, EPS);
+        Tan tan = new Tan(sin, cos, EPS);
+        Cot cot = new Cot(sin, cos, EPS);
+        MathFunction trig = new TrigonometricSystem(tan, csc, cot, sin, EPS);
+        Ln ln = new Ln(EPS);
+        MathFunction log = new LogSystem(new Logarithm(ln, 2), new Logarithm(ln, 3), new Logarithm(ln, 10), ln);
+        SystemFunction systemFunction = new SystemFunction(trig, log);
 
-        double result = systemFunction.calculate(-1);
-
-        assertTrue(Double.isFinite(result));
-
-        // вызвались только тригонометрические моки
-        verify(tanMock).calculate(-1);
-        verify(cscMock).calculate(-1);
-        verify(cotMock).calculate(-1);
-        verify(sinMock).calculate(-1);
-
-        verifyNoInteractions(log2Mock, log3Mock, log10Mock, lnMock);
-    }
-
-    @Test
-    void testSystemUsesLogForPositive() {
-        // моки
-        when(log2Mock.calculate(2)).thenReturn(1.0);
-        when(log3Mock.calculate(2)).thenReturn(0.63);
-        when(log10Mock.calculate(2)).thenReturn(0.3);
-        when(lnMock.calculate(2)).thenReturn(0.69);
-
-        double result = systemFunction.calculate(2);
-
-        assertTrue(Double.isFinite(result));
-
-        // вызвались только логарифмические моки
-        verify(log2Mock).calculate(2);
-        verify(log3Mock).calculate(2);
-        verify(log10Mock).calculate(2);
-        verify(lnMock).calculate(2);
-
-        verifyNoInteractions(tanMock, cscMock, cotMock, sinMock);
-    }
-
-    @Test
-    void testSystemAtZeroUsesTrigonometric() {
-        when(tanMock.calculate(0)).thenReturn(1.0);
-        when(cscMock.calculate(0)).thenReturn(2.0);
-        when(cotMock.calculate(0)).thenReturn(1.5);
-        when(sinMock.calculate(0)).thenReturn(0.5);
-
-        double result = systemFunction.calculate(0);
-
-        assertTrue(Double.isFinite(result));
-
-        verify(tanMock).calculate(0);
-        verify(cscMock).calculate(0);
-        verify(cotMock).calculate(0);
-        verify(sinMock).calculate(0);
-
-        verifyNoInteractions(log2Mock, log3Mock, log10Mock, lnMock);
+        double result = systemFunction.calculate(x);
+        assertEquals(expected, result, 1e-6);
     }
 }
