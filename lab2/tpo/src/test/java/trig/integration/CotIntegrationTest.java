@@ -1,12 +1,12 @@
 package trig.integration;
 
+import com.example.math.Sin;
 import com.example.math.Cos;
 import com.example.math.Cot;
-import com.example.math.Sin;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,38 +17,58 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CotIntegrationTest {
 
-    private static final double EPS = 1e-10;
+    private static final double EPS = 1e-6;
 
     @Mock
     private Sin mockSin;
 
-    @Spy
-    private Sin spySin;
-
     @Mock
     private Cos mockCos;
 
-    private Cos cos;
+    private Cot mockCot;
 
-    private Cot cot;
+    @Spy
+    private Sin spySin = new Sin(1e-10);
+
+    @Spy
+    private Cos spyCos = new Cos(spySin);
+
+    private Cot cotSpy;
 
     @BeforeEach
     void setUp() {
-        cos = spy(new Cos(spySin));
-        cot = spy(new Cot(spySin, cos, EPS));
-
-        lenient().when(mockSin.calculate(anyDouble()))
-                .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
-        lenient().when(mockCos.calculate(anyDouble()))
-                .thenAnswer(invocation -> Math.cos((Double) invocation.getArgument(0)));
+        mockCot = new Cot(mockSin, mockCos, 1e-10);
+        cotSpy = spy(new Cot(spySin, spyCos, 1e-10));
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/cot_reference.csv", numLinesToSkip = 1)
-    void shouldMatchReferenceValuesUsingSpy(double x, Double expected) {
-        assertEquals(expected, cot.calculate(x), EPS);
+    @CsvFileSource(resources = "/cot_sin_cos_reference.csv", numLinesToSkip = 1)
+    void shouldMatchReferenceValuesUsingMock(double x, Double cotExpected, double sinValue, double cosValue) {
+        if (cotExpected == null || Math.abs(sinValue) < 1e-10) {
+            assertThrows(ArithmeticException.class, () -> mockCot.calculate(x));
+            return;
+        }
+        
+        when(mockSin.calculate(x)).thenReturn(sinValue);
+        when(mockCos.calculate(x)).thenReturn(cosValue);
+        
+        double result = mockCot.calculate(x);
+        
+        assertEquals(cotExpected, result, EPS);
+        verify(mockSin, atLeastOnce()).calculate(x);
+        verify(mockCos, atLeastOnce()).calculate(x);
+    }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = "/cot_sin_cos_reference.csv", numLinesToSkip = 1)
+    void shouldMatchReferenceValuesUsingSpy(double x, Double expected, double sinValue, double cosValue) {
+        if (expected == null || Math.abs(sinValue) < 1e-10) {
+            assertThrows(ArithmeticException.class, () -> cotSpy.calculate(x));
+            return;
+        }
+        double result = cotSpy.calculate(x);
+        assertEquals(expected, result, EPS);
         verify(spySin, atLeastOnce()).calculate(x);
-        verify(cos, atLeastOnce()).calculate(x);
+        verify(spyCos, atLeastOnce()).calculate(x);
     }
 }

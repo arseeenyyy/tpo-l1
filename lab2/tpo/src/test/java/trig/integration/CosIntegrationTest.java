@@ -44,7 +44,7 @@ class CosIntegrationTest {
         double result = mockCos.calculate(x);
 
         assertEquals(expected, result, EPS);
-        verify(mockSin, times(1)).calculate(argToSin); // проверяем конкретный аргумент
+        verify(mockSin, times(1)).calculate(argToSin);
     }
 
     @ParameterizedTest
