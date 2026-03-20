@@ -31,6 +31,6 @@ class CosModuleTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValues(double x, double expected) {
-        assertEquals(expected, cos.calculate(x), EPS);
+        assertEquals(expected, cos.calculate(x), 1e-10);
     }
 }
