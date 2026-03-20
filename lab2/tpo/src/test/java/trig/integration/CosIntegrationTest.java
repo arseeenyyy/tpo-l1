@@ -21,22 +21,36 @@ class CosIntegrationTest {
     @Mock
     private Sin mockSin;
 
+    private Cos mockCos;
+
     @Spy
     private Sin spySin;
 
-    private Cos cos;
+    private Cos cosSpy;
 
     @BeforeEach
     void setUp() {
-        cos = spy(new Cos(spySin));
-        lenient().when(mockSin.calculate(anyDouble()))
-                .thenAnswer(invocation -> Math.sin((Double) invocation.getArgument(0)));
+        mockCos = new Cos(mockSin);
+        cosSpy = spy(new Cos(spySin));
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
+    void shouldMatchReferenceValuesUsingMock(double x, double expected) {
+        double argToSin = x + Math.PI / 2;
+
+        when(mockSin.calculate(argToSin)).thenReturn(expected);
+        mockCos = new Cos(mockSin);
+        double result = mockCos.calculate(x);
+
+        assertEquals(expected, result, EPS);
+        verify(mockSin, times(1)).calculate(argToSin); // проверяем конкретный аргумент
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingSpy(double x, double expected) {
-        assertEquals(expected, cos.calculate(x), EPS);
+        assertEquals(expected, cosSpy.calculate(x), EPS);
         verify(spySin, atLeastOnce()).calculate(anyDouble());
     }
 }

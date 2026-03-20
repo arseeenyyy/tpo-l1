@@ -23,9 +23,9 @@ class CosModuleTest {
     @Test
     void shouldHandleBoundaryValues() {
         assertEquals(1.0, cos.calculate(0), EPS);
-        assertEquals(-1.0, cos.calculate(Math.PI), 1e-6);
-        assertEquals(0.0, cos.calculate(Math.PI / 2), 1e-6);
-        assertEquals(0.0, cos.calculate(-Math.PI / 2), 1e-6);
+        assertEquals(-1.0, cos.calculate(Math.PI), EPS);
+        assertEquals(0.0, cos.calculate(Math.PI / 2), EPS);
+        assertEquals(0.0, cos.calculate(-Math.PI / 2), EPS);
     }
 
     @ParameterizedTest

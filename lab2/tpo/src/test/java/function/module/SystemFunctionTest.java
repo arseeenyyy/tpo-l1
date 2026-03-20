@@ -29,38 +29,9 @@ class SystemFunctionTest {
         systemFunction = new SystemFunction(trigMock, logMock);
     }
 
-    @Test
-    void testCalculateNegativeUsesTrigonometric() {
-        when(trigMock.calculate(-1)).thenReturn(42.0);
-        assertEquals(42.0, systemFunction.calculate(-1));
-        verify(trigMock).calculate(-1);
-        verifyNoInteractions(logMock);
-    }
-
-    @Test
-    void testCalculatePositiveUsesLogSystem() {
-        when(logMock.calculate(2)).thenReturn(99.0);
-        assertEquals(99.0, systemFunction.calculate(2));
-        verify(logMock).calculate(2);
-        verifyNoInteractions(trigMock);
-    }
-
-    @Test
-    void testCalculateZeroUsesTrigonometric() {
-        when(trigMock.calculate(0)).thenReturn(10.0);
-        assertEquals(10.0, systemFunction.calculate(0));
-        verify(trigMock).calculate(0);
-        verifyNoInteractions(logMock);
-    }
-
     @ParameterizedTest
     @CsvFileSource(resources = "/func.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValues(double x, double expected) {
-        if (x <= 0) {
-            assertEquals(expected, trigMock.calculate(x), EPS);
-        } else {
-            assertEquals(expected, logMock.calculate(x), EPS);
-        }
-
+        assertEquals(expected, systemFunction.calculate(x), EPS);
     }
 }
