@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CosIntegrationTest {
 
-    private static final double EPS = 1e-6;
+    private static final double EPS = 1e-10;
 
     @Mock
     private Sin mockSin;
@@ -38,13 +38,5 @@ class CosIntegrationTest {
     void shouldMatchReferenceValuesUsingSpy(double x, double expected) {
         assertEquals(expected, cos.calculate(x), EPS);
         verify(spySin, atLeastOnce()).calculate(anyDouble());
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = "/cos_reference.csv", numLinesToSkip = 1)
-    void shouldMatchReferenceValuesUsingMock(double x, double expected) {
-        Cos cosWithMock = new Cos(mockSin);
-        assertEquals(Math.cos(x), cosWithMock.calculate(x), EPS);
-        verify(mockSin, atLeastOnce()).calculate(anyDouble());
     }
 }

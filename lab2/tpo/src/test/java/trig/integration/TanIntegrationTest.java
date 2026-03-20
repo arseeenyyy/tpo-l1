@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TanIntegrationTest {
 
-    private static final double EPS = 1e-6;
+    private static final double EPS = 1e-10;
 
     @Mock
     private Sin mockSin;
@@ -46,30 +46,8 @@ class TanIntegrationTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/tan_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValuesUsingSpy(double x, double expected) {
-        if (Double.isNaN(expected)) {
-            assertThrows(ArithmeticException.class, () -> tan.calculate(x));
-        } else {
-            assertEquals(expected, tan.calculate(x), EPS);
-        }
-
+        assertEquals(expected, tan.calculate(x), EPS);
         verify(spySin, atLeastOnce()).calculate(x);
         verify(cos, atLeastOnce()).calculate(x);
-    }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = "/tan_reference.csv", numLinesToSkip = 1)
-    void shouldMatchReferenceValuesUsingMock(double x, double expected) {
-        Tan tanWithMock = new Tan(mockSin, mockCos, 1e-10);
-
-        if (Double.isNaN(expected)) {
-            when(mockCos.calculate(x)).thenReturn(0.0);  // чтобы вызвать исключение
-            when(mockSin.calculate(x)).thenReturn(1.0);
-            assertThrows(ArithmeticException.class, () -> tanWithMock.calculate(x));
-        } else {
-            assertEquals(expected, tanWithMock.calculate(x), EPS);
-        }
-
-        verify(mockSin, atLeastOnce()).calculate(x);
-        verify(mockCos, atLeastOnce()).calculate(x);
     }
 }

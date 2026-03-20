@@ -27,6 +27,6 @@ class Log3ModuleTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/log3_reference.csv", numLinesToSkip = 1)
     void shouldMatchReferenceValues(double x, double expected) {
-        assertEquals(expected, log3.calculate(x), 1e-6);
+        assertEquals(expected, log3.calculate(x), 1e-10);
     }
 }

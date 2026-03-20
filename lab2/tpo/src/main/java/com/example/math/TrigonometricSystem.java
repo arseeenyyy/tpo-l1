@@ -30,25 +30,31 @@ public class TrigonometricSystem implements MathFunction {
 
         // (tan(x) - csc(x)) * cot(x)
         double step1 = (tanVal - cscVal) * cotVal;
+        System.out.println("step1 = " + step1);
         
         // step1 - csc(x)
         double step2 = step1 - cscVal;
+        System.out.println("step2 = " + step2);
         
         // tan(x)^3
-        double tanCubed = Math.pow(tanVal, 3);
+        double tanCubed = tanVal * tanVal * tanVal;
         
         // step2 * tan(x)^3
         double step4 = step2 * tanCubed;
+        System.out.println("step4 = " + step4);
         
         // (step4)^3
-        double step5 = Math.pow(step4, 3);
+        double step5 = step4 * step4 * step4;
+        System.out.println("step5 = " + step5);
         
         // (step5)^3
-        double step6 = Math.pow(step5, 3);
+        double step6 = step5 * step5 * step5;
+        System.out.println("step6 = " + step6);
         
         // sin(x)^2 - csc(x)
-        double sinSquared = Math.pow(sinVal, 2);
+        double sinSquared = sinVal * sinVal;
         double step7 = sinSquared - cscVal;
+        System.out.println("step7 = " + step7);
         
         return step6 * step7;
     }
