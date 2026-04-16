@@ -1,18 +1,18 @@
 import com.example.Utils;
 import com.example.TestConfig;
 import com.example.pages.HomePage;
-import com.example.pages.VkPage;
+import com.example.pages.WordstatPage;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class VkParserTest {
+public class WordstatParserTest {
 
     private static Utils utils;
     private static WebDriver driver;
     private static HomePage homePage;
-    private static VkPage vkPage;
+    private static WordstatPage wordstatPage;
 
     @BeforeAll
     public static void setUp() {
@@ -20,7 +20,7 @@ public class VkParserTest {
         utils.setupDriver();
         driver = utils.getDriver();
         homePage = new HomePage(driver);
-        vkPage = new VkPage(driver);
+        wordstatPage = new WordstatPage(driver);
     }
 
     @AfterAll
@@ -43,11 +43,31 @@ public class VkParserTest {
 
     @Test
     @Order(1)
-    @DisplayName("TS-09-01: Задача на парсинг сообщества ВК создана и выполнена")
-    public void testVkCommunityParsingSuccess() {
+    @DisplayName("TS-04-01: Задача создана при помощи ручного ввода")
+    public void testManualInputTask() {
         driver.get(TestConfig.getUrlProjects());
-        vkPage.createVkParsingTask(TestConfig.getTestVkCommunityUrl());
-        boolean completed = vkPage.waitForTaskCompletion(300);
+        wordstatPage.createTaskWithManualInput(TestConfig.getTestPhrases());
+        boolean completed = wordstatPage.waitForTaskCompletion(600);
         assertTrue(completed);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("TS-04-02: Задача создана при помощи загрузки документа")
+    public void testFileUploadTask() {
+        driver.get(TestConfig.getUrlProjects());
+        wordstatPage.createTaskWithFileUpload(TestConfig.getTestFilePath());
+        boolean completed = wordstatPage.waitForTaskCompletion(600);
+        assertTrue(completed);
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("TS-04-03: Невалидные данные для создания задачи")
+    public void testInvalidData() {
+        driver.get(TestConfig.getUrlProjects());
+        wordstatPage.navigateToWordstat();
+        wordstatPage.clickStartButtonWithoutData();
+        assertTrue(wordstatPage.isErrorMessageDisplayed());
     }
 }

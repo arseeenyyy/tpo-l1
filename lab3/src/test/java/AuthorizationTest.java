@@ -1,9 +1,9 @@
+import com.example.Utils;
+import com.example.TestConfig;
+import com.example.pages.HomePage;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import static org.junit.jupiter.api.Assertions.*;
-
-import com.example.Utils;
-import com.example.pages.HomePage;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthorizationTest {
@@ -11,14 +11,6 @@ public class AuthorizationTest {
     private static Utils utils;
     private static WebDriver driver;
     private static HomePage homePage;
-
-    private static final String VALID_LOGIN = "rubtsovesenya05@mail.ru";
-    private static final String VALID_PASSWORD = "rubtsove05";
-    private static final String INVALID_LOGIN = "wrong_user@example.com";
-    private static final String INVALID_PASSWORD = "wrong_password";
-
-    private static final String URL_PROJECTS = "https://promopult.ru/projects";
-    private static final String URL_HOME = "https://promopult.ru/";
 
     @BeforeAll
     public static void setUp() {
@@ -39,10 +31,10 @@ public class AuthorizationTest {
     @Order(1)
     @DisplayName("TS-01-03: Невалидные данные для входа")
     public void invalidLoginTest() {
-        driver.get(URL_HOME);
+        driver.get(TestConfig.getUrlHome());
         homePage.clickLoginOpenButton();
         utils.getWaitTime().until(d -> homePage.isLoginFormDisplayed());
-        homePage.enterCredentialsAndSubmit(INVALID_LOGIN, INVALID_PASSWORD);
+        homePage.enterCredentialsAndSubmit(TestConfig.getInvalidLogin(), TestConfig.getInvalidPassword());
         utils.getWaitTime().until(d -> homePage.isErrorMessageDisplayed());
         assertTrue(homePage.isErrorMessageDisplayed());
     }
@@ -51,12 +43,12 @@ public class AuthorizationTest {
     @Order(2)
     @DisplayName("TS-01-01: Успешная авторизация")
     public void successfulLoginTest() {
-        driver.get(URL_HOME);
+        driver.get(TestConfig.getUrlHome());
         homePage.clickLoginOpenButton();
         utils.getWaitTime().until(d -> homePage.isLoginFormDisplayed());
-        homePage.enterCredentialsAndSubmit(VALID_LOGIN, VALID_PASSWORD);
-        utils.getWaitTime().until(d -> driver.getCurrentUrl().startsWith(URL_PROJECTS));
-        assertEquals(URL_PROJECTS, driver.getCurrentUrl());
+        homePage.enterCredentialsAndSubmit(TestConfig.getValidLogin(), TestConfig.getValidPassword());
+        utils.getWaitTime().until(d -> driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects()));
+        assertEquals(TestConfig.getUrlProjects(), driver.getCurrentUrl());
     }
 
     @Test
@@ -64,8 +56,8 @@ public class AuthorizationTest {
     @DisplayName("TS-01-02: Выход из системы")
     public void logoutTest() {
         homePage.clickLogoutButton();
-        utils.getWaitTime().until(d -> driver.getCurrentUrl().equals(URL_HOME) ||
-                                        driver.getCurrentUrl().startsWith(URL_HOME + "?"));
-        assertTrue(driver.getCurrentUrl().startsWith(URL_HOME));
+        utils.getWaitTime().until(d -> driver.getCurrentUrl().equals(TestConfig.getUrlHome()) ||
+                                        driver.getCurrentUrl().startsWith(TestConfig.getUrlHome() + "?"));
+        assertTrue(driver.getCurrentUrl().startsWith(TestConfig.getUrlHome()));
     }
 }
