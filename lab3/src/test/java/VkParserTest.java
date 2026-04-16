@@ -21,6 +21,12 @@ public class VkParserTest {
         driver = utils.getDriver();
         homePage = new HomePage(driver);
         vkPage = new VkPage(driver);
+
+        driver.get(TestConfig.getUrlHome());
+        homePage.clickLoginOpenButton();
+        utils.getWaitTime().until(d -> homePage.isLoginFormDisplayed());
+        homePage.enterCredentialsAndSubmit(TestConfig.getValidLogin(), TestConfig.getValidPassword());
+        utils.getWaitTime().until(d -> driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects()));
     }
 
     @AfterAll
@@ -30,16 +36,16 @@ public class VkParserTest {
         }
     }
 
-    @BeforeEach
-    public void ensureLoggedIn() {
-        if (!driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects())) {
-            driver.get(TestConfig.getUrlHome());
-            homePage.clickLoginOpenButton();
-            utils.getWaitTime().until(d -> homePage.isLoginFormDisplayed());
-            homePage.enterCredentialsAndSubmit(TestConfig.getValidLogin(), TestConfig.getValidPassword());
-            utils.getWaitTime().until(d -> driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects()));
-        }
-    }
+    // @BeforeEach
+    // public void ensureLoggedIn() {
+    //     if (!driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects())) {
+    //         driver.get(TestConfig.getUrlHome());
+    //         homePage.clickLoginOpenButton();
+    //         utils.getWaitTime().until(d -> homePage.isLoginFormDisplayed());
+    //         homePage.enterCredentialsAndSubmit(TestConfig.getValidLogin(), TestConfig.getValidPassword());
+    //         utils.getWaitTime().until(d -> driver.getCurrentUrl().startsWith(TestConfig.getUrlProjects()));
+    //     }
+    // }
 
     @Test
     @Order(1)

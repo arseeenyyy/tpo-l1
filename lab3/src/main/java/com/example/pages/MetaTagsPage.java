@@ -1,6 +1,7 @@
 package com.example.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,16 +9,16 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
+
 import java.time.Duration;
 import java.util.NoSuchElementException;
 
-public class WordstatPage extends Page {
+public class MetaTagsPage extends Page {
 
     private WebDriverWait wait;
     private String lastCreatedTaskId;
 
-    public WordstatPage(WebDriver driver) {
+    public MetaTagsPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -26,10 +27,10 @@ public class WordstatPage extends Page {
     @FindBy(xpath = "//*[@id='sp_side_menu']/div[1]/div[1]/section[4]/ul/li[1]/a")
     private WebElement parserMenuLink;
 
-    @FindBy(xpath = "//*[@id='tools']/div[13]/div/div[2]/div[2]/a")
-    private WebElement wordstatTool;
+    @FindBy(xpath = "//*[@id='tools']/div[8]/div/div[2]/div[2]/a")
+    private WebElement metaTagsTool;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[3]/textarea")
+    @FindBy(xpath = "//*[@id='form_request_parameters']/div/div[5]/textarea")
     private WebElement manualInputTrigger;
 
     @FindBy(xpath = "//*[@id='resize_textarea']")
@@ -38,36 +39,39 @@ public class WordstatPage extends Page {
     @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
     private WebElement okButton;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[3]/div[2]")
+    @FindBy(xpath = "//*[@id='accordion_settings']/div[2]/div[1]")
     private WebElement startButton;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[1]/div[3]")
+    @FindBy(xpath = "//*[@id='form_request_parameters']/div/div[3]/div[3]")
     private WebElement fileUploadButton;
 
     @FindBy(xpath = "//input[@type='file']")
     private WebElement fileInput;
 
-    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
-    private WebElement submitButton;
-
     @FindBy(xpath = "//*[@id='lightbox-message']/span")
     private WebElement popupErrorMessage;
 
+    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
+    private WebElement submitButton;
 
 
-    public void navigateToWordstat() {
+    public void navigateToMetaTags() {
         parserMenuLink.click();
-        wait.until(ExpectedConditions.elementToBeClickable(wordstatTool)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(metaTagsTool)).click();
     }
 
     public void openManualInputModal() {
         wait.until(ExpectedConditions.elementToBeClickable(manualInputTrigger)).click();
     }
 
-    public void enterPhrases(String phrases) {
+    public void enterUrls(String urls) {
         WebElement input = wait.until(ExpectedConditions.visibilityOf(modalTextarea));
         input.clear();
-        input.sendKeys(phrases);
+        input.sendKeys(urls);
+    }
+
+    public void clickSubmitButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
     }
 
     public void clickOkButton() {
@@ -83,18 +87,11 @@ public class WordstatPage extends Page {
     public void clickStartButton() {
         wait.until(ExpectedConditions.elementToBeClickable(startButton)).click();
     }
+
     public void clickStartButtonWithoutData() {
         WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(startButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
-
-    public void clickSubmitButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
-    }
-
-    public String getErrorMessageText() {
-        return popupErrorMessage.getText();
-    }   
 
     public void waitForTasksTable() {
         wait.until(driver -> {
@@ -107,10 +104,10 @@ public class WordstatPage extends Page {
         });
     }
 
-    public void createTaskWithManualInput(String phrases) {
-        navigateToWordstat();
+    public void createTaskWithManualInput(String urls) {
+        navigateToMetaTags();
         openManualInputModal();
-        enterPhrases(phrases);
+        enterUrls(urls);
         clickOkButton();
         clickStartButton();
         clickSubmitButton();
@@ -124,7 +121,7 @@ public class WordstatPage extends Page {
     }
 
     public void createTaskWithFileUpload(String filePath) {
-        navigateToWordstat();
+        navigateToMetaTags();
         uploadFile(filePath);
         clickStartButton();
         clickSubmitButton();
@@ -165,6 +162,7 @@ public class WordstatPage extends Page {
 
                 Thread.sleep(5000);
             } catch (StaleElementReferenceException | NoSuchElementException e) {
+                // ignore
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;

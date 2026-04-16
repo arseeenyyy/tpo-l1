@@ -54,4 +54,15 @@ public class TestConfig {
     public static String getTestVkCommunityUrl() {
         return props.getProperty("test.vk.community.url");
     }
+    public static String getTestPhrasesForClustering() {
+        return props.getProperty("test.clustering.phrases");
+    }
+
+    public static String getTestFilePathForClustering() {
+        return props.getProperty("test.clustering.file.path");
+    }
+    
+    public static String getTestFilePathForMetaTags() {
+        return props.getProperty("test.metatags.file.path");
+    }
 }
