@@ -1,6 +1,7 @@
 package com.example.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,16 +9,16 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
+
 import java.time.Duration;
 import java.util.NoSuchElementException;
 
-public class WordstatPage extends Page {
+public class CombinatorPage extends Page {
 
     private WebDriverWait wait;
     private String lastCreatedTaskId;
 
-    public WordstatPage(WebDriver driver) {
+    public CombinatorPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -26,75 +27,51 @@ public class WordstatPage extends Page {
     @FindBy(xpath = "//*[@id='sp_side_menu']/div[1]/div[1]/section[4]/ul/li[1]/a")
     private WebElement parserMenuLink;
 
-    @FindBy(xpath = "//*[@id='tools']/div[13]/div/div[2]/div[2]/a")
-    private WebElement wordstatTool;
+    @FindBy(xpath = "//*[@id='tools']/div[5]/div/div[2]/div[2]/a")
+    private WebElement combinatorTool;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[3]/textarea")
-    private WebElement manualInputTrigger;
+    @FindBy(xpath = "//*[@id='combinator_block']/div[1]/textarea")
+    private WebElement field1;
 
-    @FindBy(xpath = "//*[@id='resize_textarea']")
-    private WebElement modalTextarea;
+    @FindBy(xpath = "//*[@id='combinator_block']/div[3]/textarea")
+    private WebElement field2;
 
-    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
-    private WebElement okButton;
+    @FindBy(xpath = "//*[@id='combinator_block']/div[5]/textarea")
+    private WebElement field3;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[3]/div[2]")
+    @FindBy(xpath = "//*[@id='combinator_block']/div[7]/textarea")
+    private WebElement field4;
+
+    @FindBy(xpath = "//*[@id='form_request_parameters']/div[3]/div[1]")
     private WebElement startButton;
-
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[1]/div[3]")
-    private WebElement fileUploadButton;
-
-    @FindBy(xpath = "//input[@type='file']")
-    private WebElement fileInput;
-
-    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
-    private WebElement submitButton;
 
     @FindBy(xpath = "//*[@id='lightbox-message']/span")
     private WebElement popupErrorMessage;
 
-
-
-    public void navigateToWordstat() {
+    public void navigateToCombinator() {
         parserMenuLink.click();
-        wait.until(ExpectedConditions.elementToBeClickable(wordstatTool)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(combinatorTool)).click();
     }
 
-    public void openManualInputModal() {
-        wait.until(ExpectedConditions.elementToBeClickable(manualInputTrigger)).click();
-    }
-
-    public void enterPhrases(String phrases) {
-        WebElement input = wait.until(ExpectedConditions.visibilityOf(modalTextarea));
-        input.clear();
-        input.sendKeys(phrases);
-    }
-
-    public void clickOkButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(okButton)).click();
-    }
-
-    public void uploadFile(String absoluteFilePath) {
-        fileUploadButton.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@type='file']")));
-        fileInput.sendKeys(absoluteFilePath);
+    public void enterWords(String word1, String word2, String word3, String word4) {
+        field1.clear();
+        field1.sendKeys(word1);
+        field2.clear();
+        field2.sendKeys(word2);
+        field3.clear();
+        field3.sendKeys(word3);
+        field4.clear();
+        field4.sendKeys(word4);
     }
 
     public void clickStartButton() {
         wait.until(ExpectedConditions.elementToBeClickable(startButton)).click();
     }
+
     public void clickStartButtonWithoutData() {
         WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(startButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
-
-    public void clickSubmitButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
-    }
-
-    public String getErrorMessageText() {
-        return popupErrorMessage.getText();
-    }   
 
     public void waitForTasksTable() {
         wait.until(driver -> {
@@ -107,27 +84,10 @@ public class WordstatPage extends Page {
         });
     }
 
-    public void createTaskWithManualInput(String phrases) {
-        navigateToWordstat();
-        openManualInputModal();
-        enterPhrases(phrases);
-        clickOkButton();
+    public void createCombinatorTask(String word1, String word2, String word3, String word4) {
+        navigateToCombinator();
+        enterWords(word1, word2, word3, word4);
         clickStartButton();
-        clickSubmitButton();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        waitForTasksTable();
-        captureTaskId();
-    }
-
-    public void createTaskWithFileUpload(String filePath) {
-        navigateToWordstat();
-        uploadFile(filePath);
-        clickStartButton();
-        clickSubmitButton();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

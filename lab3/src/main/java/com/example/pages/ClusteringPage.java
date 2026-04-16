@@ -195,11 +195,6 @@ public class ClusteringPage extends Page {
                 }
 
                 Thread.sleep(5000);
-            } catch (StaleElementReferenceException | NoSuchElementException e) {
-                // continue
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
             } catch (Exception e) {
                 break;
             }

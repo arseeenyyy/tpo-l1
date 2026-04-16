@@ -65,4 +65,12 @@ public class TestConfig {
     public static String getTestFilePathForMetaTags() {
         return props.getProperty("test.metatags.file.path");
     }
+
+    public static String getTestFilePathForAssociation() {
+       return props.getProperty("test.association.file.path");
+    }
+
+    public static String getTestFilePathForCompetitorAds() {
+        return props.getProperty("test.competitorads.file.path");
+    }
 }

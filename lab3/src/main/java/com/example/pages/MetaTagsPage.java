@@ -161,11 +161,6 @@ public class MetaTagsPage extends Page {
                 }
 
                 Thread.sleep(5000);
-            } catch (StaleElementReferenceException | NoSuchElementException e) {
-                // ignore
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
             } catch (Exception e) {
                 break;
             }

@@ -1,6 +1,7 @@
 package com.example.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -8,16 +9,16 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
+
 import java.time.Duration;
 import java.util.NoSuchElementException;
 
-public class WordstatPage extends Page {
+public class CompetitorAdsPage extends Page {
 
     private WebDriverWait wait;
     private String lastCreatedTaskId;
 
-    public WordstatPage(WebDriver driver) {
+    public CompetitorAdsPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -26,52 +27,57 @@ public class WordstatPage extends Page {
     @FindBy(xpath = "//*[@id='sp_side_menu']/div[1]/div[1]/section[4]/ul/li[1]/a")
     private WebElement parserMenuLink;
 
-    @FindBy(xpath = "//*[@id='tools']/div[13]/div/div[2]/div[2]/a")
-    private WebElement wordstatTool;
+    @FindBy(xpath = "//*[@id='tools']/div[15]/div/div[2]/div[2]/a")
+    private WebElement competitorAdsTool;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[3]/textarea")
+    @FindBy(xpath = "//*[@id='tool_search_competitor_ads']/div[1]/div/div[2]/div/div[1]/div/div[3]/div/div[3]/textarea")
     private WebElement manualInputTrigger;
 
-    @FindBy(xpath = "//*[@id='resize_textarea']")
+    @FindBy(xpath = "/html/body/div[14]/div/div[2]/div/div[2]/div[2]/form/textarea")
     private WebElement modalTextarea;
 
-    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
-    private WebElement okButton;
+    @FindBy(xpath = "/html/body/div[14]/div/div[2]/div/div[3]/div/button[1]")
+    private WebElement addButton;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[3]/div[2]")
+    @FindBy(xpath = "//*[@id='tool_search_competitor_ads']/div[1]/div/div[2]/div/div[5]/div/button")
     private WebElement startButton;
 
-    @FindBy(xpath = "//*[@id='form_request_parameters']/div[1]/div/div[1]/div[3]")
+    @FindBy(xpath = "//*[@id='tool_search_competitor_ads']/div[1]/div/div[2]/div/div[1]/div/div[1]/div/div[3]/div/label")
     private WebElement fileUploadButton;
 
     @FindBy(xpath = "//input[@type='file']")
     private WebElement fileInput;
 
-    @FindBy(xpath = "//*[@id='lightbox_buttons']/button[1]")
-    private WebElement submitButton;
+    @FindBy(xpath = "//*[@id='section_requests']/div/span")
+    private WebElement tasksTable;
 
-    @FindBy(xpath = "//*[@id='lightbox-message']/span")
-    private WebElement popupErrorMessage;
-
-
-
-    public void navigateToWordstat() {
+    public void navigateToCompetitorAds() {
         parserMenuLink.click();
-        wait.until(ExpectedConditions.elementToBeClickable(wordstatTool)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(competitorAdsTool)).click();
     }
 
     public void openManualInputModal() {
         wait.until(ExpectedConditions.elementToBeClickable(manualInputTrigger)).click();
     }
 
-    public void enterPhrases(String phrases) {
+    public void enterDomains(String domains) {
         WebElement input = wait.until(ExpectedConditions.visibilityOf(modalTextarea));
         input.clear();
-        input.sendKeys(phrases);
+        input.sendKeys(domains);
     }
 
-    public void clickOkButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(okButton)).click();
+    public void clickTasksTable() {
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(tasksTable));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+    }
+
+    public void clickAddButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(addButton)).click();
+    }
+
+    public void clickStartButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(startButton)).click();
     }
 
     public void uploadFile(String absoluteFilePath) {
@@ -80,26 +86,10 @@ public class WordstatPage extends Page {
         fileInput.sendKeys(absoluteFilePath);
     }
 
-    public void clickStartButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(startButton)).click();
-    }
-    public void clickStartButtonWithoutData() {
-        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(startButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
-    }
-
-    public void clickSubmitButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
-    }
-
-    public String getErrorMessageText() {
-        return popupErrorMessage.getText();
-    }   
-
     public void waitForTasksTable() {
         wait.until(driver -> {
             try {
-                WebElement table = driver.findElement(By.xpath("//table[@id='request_list_grid']"));
+                WebElement table = driver.findElement(By.xpath("//*[@id='tool_search_competitor_ads']/div[1]/div/div[4]/div/table"));
                 return table.findElements(By.xpath(".//tbody/tr")).size() > 0;
             } catch (NoSuchElementException e) {
                 return false;
@@ -107,38 +97,38 @@ public class WordstatPage extends Page {
         });
     }
 
-    public void createTaskWithManualInput(String phrases) {
-        navigateToWordstat();
+    public void createTaskWithManualInput(String domains) {
+        navigateToCompetitorAds();
         openManualInputModal();
-        enterPhrases(phrases);
-        clickOkButton();
+        enterDomains(domains);
+        clickAddButton();
         clickStartButton();
-        clickSubmitButton();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        clickTasksTable();
         waitForTasksTable();
         captureTaskId();
     }
 
     public void createTaskWithFileUpload(String filePath) {
-        navigateToWordstat();
+        navigateToCompetitorAds();
         uploadFile(filePath);
         clickStartButton();
-        clickSubmitButton();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        clickTasksTable();
         waitForTasksTable();
         captureTaskId();
     }
 
     private void captureTaskId() {
-        WebElement firstRow = driver.findElement(By.xpath("//table[@id='request_list_grid']/tbody/tr[1]"));
+        WebElement firstRow = driver.findElement(By.xpath("//*[@id='tool_search_competitor_ads']/div[1]/div/div[4]/div/table/tbody/tr[1]"));
         lastCreatedTaskId = firstRow.getAttribute("id");
     }
 
@@ -150,16 +140,21 @@ public class WordstatPage extends Page {
             try {
                 if (refreshCount % 2 == 0) {
                     driver.navigate().refresh();
-                    waitForTasksTable();
+                    try {
+                        Thread.sleep(2000); 
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    clickTasksTable(); 
+                    waitForTasksTable(); 
                 }
                 refreshCount++;
 
-                WebElement table = driver.findElement(By.xpath("//table[@id='request_list_grid']"));
-                WebElement firstRow = table.findElement(By.xpath(".//tbody/tr[1]"));
-                WebElement statusCell = firstRow.findElement(By.xpath("./td[4]/label"));
+                WebElement firstRow = driver.findElement(By.xpath("//*[@id='tool_search_competitor_ads']/div[1]/div/div[4]/div/table/tbody/tr[1]"));
+                WebElement statusCell = firstRow.findElement(By.xpath("./td[4]"));
                 String statusText = statusCell.getText();
 
-                if (statusText.toLowerCase().contains("выполнен")) {
+                if (statusText.toLowerCase().contains("выполнен") || statusText.toLowerCase().contains("нет данных")) {
                     return true;
                 }
 
@@ -169,14 +164,5 @@ public class WordstatPage extends Page {
             }
         }
         return false;
-    }
-
-    public boolean isErrorMessageDisplayed() {
-        try {
-            wait.until(ExpectedConditions.visibilityOf(popupErrorMessage));
-            return popupErrorMessage.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
